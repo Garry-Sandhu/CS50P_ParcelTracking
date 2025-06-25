@@ -120,3 +120,47 @@ def get_all_packages():
     conn.close()
 
     return [dict(row) for row in rows]
+
+def get_package_by_id(tracking_id):
+    """
+    Fetch a single package by its tracking ID.
+
+    Args: 
+        tracking_id (str): The ID of the package to fetch.
+    
+    Returns:
+        dict or None: A dictionary representing the package, or None if not found.
+    """
+
+    conn, cursor = connect()
+
+    cursor.execute('SELECT * FROM packages WHERE id = ?', (tracking_id,))
+    row = cursor.fetchone()
+
+    conn.close()
+
+    if row:
+        return dict(row)
+    else:
+        return None
+    
+def delete_package(tracking_id):
+    """
+    Delete a package from the database by its Tracking ID/
+
+    Args:
+        tracking_id (str): The ID of the package to delete
+
+    Returns:
+        bool: True if the package was deleted, False if no such package exists.
+    """
+
+    conn, cursor = connect()
+
+    cursor.execute('DELETE FROM packages WHERE id =?', (tracking_id,))
+    deleted = cursor.rowcount > 0 # Check if any row was deleted 
+
+    conn.commit()
+    conn.close()
+
+    return deleted

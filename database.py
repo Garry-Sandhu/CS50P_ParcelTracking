@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 db_name = "data/packages.db"
 
@@ -43,6 +44,19 @@ def init_db():
         )
     """)
 
+    #Create a table for order status history tracking
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS package_status_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            package_id TEXT NOT NULL,
+            status TEXT NOT NULL,
+            changed_at TEXT NOT NULL,
+            FOREIGN KEY (package_id) REFERENCES packages(id)
+        )
+                   
+    """)
+
     #Commit changes and close the connection
 
     conn.commit()
@@ -81,7 +95,7 @@ def add_package(package_dict: dict):
 
 
 
-def update_status(packages_id: str, new_status: str):
+def update_status(package_id: str, new_status: str):
     """
     Updated the status of a package given its ID/
 
@@ -96,10 +110,12 @@ def update_status(packages_id: str, new_status: str):
         UPDATE packages
         SET status = ?
         WHERE id = ?
-    """, (new_status, packages_id))
+    """, (new_status, package_id))
 
     conn.commit()
     conn.close()
+
+    log_status_change(package_id, new_status)
     
 
 
@@ -164,3 +180,28 @@ def delete_package(tracking_id):
     conn.close()
 
     return deleted
+
+
+def log_status_change(package_id: str, status: str):
+    conn, cursor = connect()
+    changed_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute("""
+        INSERT INTO package_status_log (package_id, status, changed_at)
+        VALUES (?, ?, ?)
+    """, (package_id, status, changed_at))
+
+    conn.commit()
+    conn.close()
+
+def get_status_history(package_id: str):
+    conn, cursor = connect()
+    cursor.execute("""
+        SELECT status, changed_at FROM package_status_log
+        WHERE package_id = ?
+        ORDER BY changed_at ASC
+    """, (package_id,))
+    
+    history = cursor.fetchall()
+    conn.close()
+    return history

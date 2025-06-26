@@ -1,5 +1,5 @@
 from database import init_db, add_package, get_all_packages
-from tracker import create_package, update_package_status, delete_package_by_id, track_package_by_id
+from tracker import create_package, update_package_status, delete_package_by_id, track_package_by_id, view_status_history
 from datetime import datetime
 
 def main():
@@ -35,7 +35,8 @@ def main():
         print("2. Update Package Status")
         print("3. Delete Package")
         print("4. Track Package")
-        print("5. Exit")
+        print("5. View Package Status History")
+        print("6. Exit")
 
         choice = input("Choose an option: ").strip()
         if choice == "1":
@@ -47,6 +48,8 @@ def main():
         elif choice == "4":
             track_package_by_id()
         elif choice == "5":
+            view_status_history()
+        elif choice == "6":
             break
         else:
             print("Invalid choice.")

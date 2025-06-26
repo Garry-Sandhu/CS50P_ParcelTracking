@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
-from database import add_package, update_status, get_package, delete_package
+from database import add_package, update_status, get_package, delete_package, get_status_history
 
 def create_package():
     #prompt user for input 
@@ -25,8 +25,24 @@ def create_package():
     status = "New Shipment"
 
     #Set ETA (e.g., 5 days from now)
-    eta_days = 5
-    eta = datetime.now() + timedelta(days=eta_days)
+
+    print("Choose a shipping option: ")
+    print("1. Standard Shipping - 5 Days")
+    print("2. Priority Shipping - 3 Days")
+    print("3. Expedited Shipping - 2 Days")
+    print("4. Over-Night Delivery")
+
+    shipping_selection = input("Enter Choice: ").strip()
+
+    shipping_option = {
+        "1": 5,
+        "2": 3,
+        "3": 2,
+        "4": 1
+    }
+
+
+    eta = datetime.now() + timedelta(days=shipping_option[shipping_selection])
 
 
     #Build package dictionary
@@ -46,7 +62,7 @@ def create_package():
     #Call the add_package function to store package 
     add_package(package)
 
-    print(f'Package created successfully with Tracking ID: {tracker_id}')
+    print(f'Package created successfully with Tracking ID: {tracker_id} with expected delivery date as {eta.strftime("%Y-%m-%d")}')
 
 
 
@@ -92,3 +108,17 @@ def track_package_by_id():
         print(f'Package {tracking_id} is {package["status"]} and expected to be deliverd by {package["eta"]}')
     else:
         print("Package not found.")
+
+def view_status_history():
+    tracking_id = input("Enter the Tracking ID to view status history: ").strip()
+    history = get_status_history(tracking_id)
+
+    if not history:
+        print("No history found for this package")
+        return
+    
+    print(f'\n📦 Status history for {tracking_id}:\n')
+
+    for row in history:
+        print(f' - {row["changed_at"]} -> {row["status"]}')
+    

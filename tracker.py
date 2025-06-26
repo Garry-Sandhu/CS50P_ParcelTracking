@@ -55,19 +55,20 @@ def update_package_status():
     package = get_package(tracking_id)
     print(f'Current Package status: {package['status']}')
     print("Choose new status:")
-    print("1. Out for Delivery")
-    print("2. Delivered")
+    print("1. In Transit")
+    print("2. Out for Delivery")
+    print("3. Delivered")
     choice = input("Enter choice:")
 
     status_option = {
         "1": "In Transit",
-        "3": "Out for Delivery",
+        "2": "Out for Delivery",
         "3": "Delivered"
     }
 
-    update_status(tracking_id, new_status)
+    update_status(tracking_id, status_option[choice])
 
-    print(f'Status for package {tracking_id} updated to {new_status}')
+    print(f'Status for package {tracking_id} updated to {status_option[choice]}')
 
 def delete_package_by_id():
     tracking_id = input("Enter the Tracking ID to delete: ").strip()

@@ -52,7 +52,7 @@ def create_package():
 
 def update_package_status():
     tracking_id = input("Enter the Tracking ID: ")
-    package = get_package_by_id(tracking_id)
+    package = get_package(tracking_id)
     print(f'Current Package status: {package['status']}')
     print("Choose new status:")
     print("1. Out for Delivery")

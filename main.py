@@ -35,7 +35,7 @@ def main():
         print("2. Update Package Status")
         print("3. Delete Package")
         print("4. Track Package")
-        print("4. Exit")
+        print("5. Exit")
 
         choice = input("Choose an option: ").strip()
         if choice == "1":

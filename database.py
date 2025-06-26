@@ -121,7 +121,7 @@ def get_all_packages():
 
     return [dict(row) for row in rows]
 
-def get_package_by_id(tracking_id):
+def get_package(tracking_id):
     """
     Fetch a single package by its tracking ID.
 

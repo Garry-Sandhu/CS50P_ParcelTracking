@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
-from database import add_package, update_status, get_package_by_id,delete_package
+from database import add_package, update_status, get_package, delete_package
 
 def create_package():
     #prompt user for input 
@@ -78,7 +78,16 @@ def delete_package_by_id():
         print("Cancelled.")
         return
     
-    if delete_package_by_id(tracking_id):
+    if delete_package(tracking_id):
         print(f'package {tracking_id} has been deleted successfully')
     else:
         print("Package not found or already deleted.")
+
+def track_package_by_id():
+    tracking_id = input("Enter the Tracking ID: ").strip()
+
+    if get_package(tracking_id):
+        package = get_package(tracking_id)
+        print(f'Package {tracking_id} is {package["status"]} and expected to be deliverd by {package["eta"]}')
+    else:
+        print("Package not found.")

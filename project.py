@@ -51,6 +51,7 @@ def show_dashboard():
     
     from database import get_status_distribution, get_recent_packages
     import plotly.express as px
+    colors = ['gold', 'mediumturquoise', 'darkorange', 'lightgreen']
     
     # Status distribution
     st.subheader("Package Status Overview")
@@ -60,8 +61,8 @@ def show_dashboard():
     
     with col1:
         if not status_df.empty:
-            fig = px.pie(status_df, values='Count', names='Status', 
-                         title="Status Distribution", hole=0.3)
+            fig = px.pie(status_df,values='Count', names='Status',title="Status Distribution")
+            fig.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=20,textposition='inside',marker=dict(colors=colors, line=dict(color='#000000', width=2)))
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.warning("No package data available")

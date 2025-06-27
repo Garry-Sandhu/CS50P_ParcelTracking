@@ -145,11 +145,9 @@ def track_package_by_id():
     st.header("📡 Track Package")
     
     with st.form("track_package_form"):
-        tracking_id = st.text_input(
-            "Enter Tracking ID",
-            placeholder="e.g. PKG12345",
-            help="Enter your package tracking number"
-        )
+        tracking_id = st.text_input("Enter Tracking ID",
+                                  placeholder="e.g. PKG12345",
+                                  help="Enter your package tracking number")
         
         if st.form_submit_button("Track Package"):
             if tracking_id:
@@ -165,91 +163,29 @@ def track_package_by_id():
                         "Returned": "↩️"
                     }.get(package['status'], "ℹ️")
                     
-                    # Main package card
                     with st.container(border=True):
                         st.markdown(f"""
                         ### {status_emoji} Current Status: **{package['status']}**
                         
-                        **Tracking ID**: {package['id']}  
+                        **Tracking ID**: {package['id']}
                         **Estimated Delivery**: {package['eta']}
                         """)
                     
-                    # Package details
-                    st.subheader("Package Details")
-                    col1, col2 = st.columns(2)
+                    # Package journey visualization
+                    st.subheader("Package Journey")
+                    col1, col2 = st.columns([1, 3])
                     with col1:
                         st.markdown(f"""
-                        🏢 **From**: {package['origin']}  
-                        🏠 **To**: {package['destination']}  
+                        🏢 **From**: {package['origin']}
+                        🏠 **To**: {package['destination']}
                         ⚖️ **Weight**: {package['weight']} kg
                         """)
                     
                     with col2:
-                        st.markdown(f"""
-                        👤 **Sender**: {package['sender']}  
-                        👤 **Receiver**: {package['receiver']}  
-                        📅 **Created**: {package['created_at']}
-                        """)
-                    
-                    # Map visualization with error handling
-                    st.subheader("Package Route")
-                    
-                    try:
-                        # Try with SSL verification disabled (not recommended for production)
-                        geolocator = Nominatim(user_agent="package_tracker", ssl_context=False)
-                        geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
-                        
-                        origin_location = geocode(package['origin'])
-                        dest_location = geocode(package['destination'])
-                        
-                        if origin_location and dest_location:
-                            route_df = pd.DataFrame({
-                                'location': [package['origin'], package['destination']],
-                                'lat': [origin_location.latitude, dest_location.latitude],
-                                'lon': [origin_location.longitude, dest_location.longitude],
-                                'size': [10, 10]
-                            })
-                        else:
-                            # Fallback to sample coordinates if geocoding fails
-                            st.warning("Could not map exact locations. Showing approximate route.")
-                            route_df = pd.DataFrame({
-                                'location': [package['origin'], package['destination']],
-                                'lat': [40.7128, 34.0522],  # NYC to LA
-                                'lon': [-74.0060, -118.2437],
-                                'size': [10, 10]
-                            })
-                            
-                        fig = px.line_mapbox(
-                            route_df,
-                            lat="lat",
-                            lon="lon",
-                            hover_name="location",
-                            zoom=3,
-                            height=400
-                        )
-                        
-                        fig.update_layout(
-                            mapbox_style="stamen-terrain",
-                            margin={"r":0,"t":0,"l":0,"b":0},
-                            mapbox=dict(
-                                center=dict(lat=route_df['lat'].mean(), 
-                                          lon=route_df['lon'].mean())
-                            )
-                        )
-                        
-                        fig.update_traces(
-                            line=dict(color="red", width=3),
-                            marker=dict(size=12, color="blue")
-                        )
-                        
-                        st.plotly_chart(fig, use_container_width=True)
-                    
-                    except Exception as e:
-                        st.error(f"Failed to load map: {str(e)}")
-                        st.warning("Map visualization is currently unavailable")
-                
+                        st.map()  # Would integrate with real map API in production
                 else:
                     st.error("Package not found. Please check your Tracking ID")
+
 
 def view_status_history():
     tracking_id = st.text_input("Enter Tracking ID to View History").strip()

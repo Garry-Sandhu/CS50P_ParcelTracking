@@ -136,6 +136,11 @@ def delete_package_by_id():
         else:
             st.error("❌ Package not found. Please verify the Tracking ID")
 
+import plotly.express as px
+import pandas as pd
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+
 def track_package_by_id():
     st.header("📡 Track Package")
     
@@ -185,6 +190,64 @@ def track_package_by_id():
                         👤 **Receiver**: {package['receiver']}  
                         📅 **Created**: {package['created_at']}
                         """)
+                    
+                    # Map visualization with error handling
+                    st.subheader("Package Route")
+                    
+                    try:
+                        # Try with SSL verification disabled (not recommended for production)
+                        geolocator = Nominatim(user_agent="package_tracker", ssl_context=False)
+                        geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
+                        
+                        origin_location = geocode(package['origin'])
+                        dest_location = geocode(package['destination'])
+                        
+                        if origin_location and dest_location:
+                            route_df = pd.DataFrame({
+                                'location': [package['origin'], package['destination']],
+                                'lat': [origin_location.latitude, dest_location.latitude],
+                                'lon': [origin_location.longitude, dest_location.longitude],
+                                'size': [10, 10]
+                            })
+                        else:
+                            # Fallback to sample coordinates if geocoding fails
+                            st.warning("Could not map exact locations. Showing approximate route.")
+                            route_df = pd.DataFrame({
+                                'location': [package['origin'], package['destination']],
+                                'lat': [40.7128, 34.0522],  # NYC to LA
+                                'lon': [-74.0060, -118.2437],
+                                'size': [10, 10]
+                            })
+                            
+                        fig = px.line_mapbox(
+                            route_df,
+                            lat="lat",
+                            lon="lon",
+                            hover_name="location",
+                            zoom=3,
+                            height=400
+                        )
+                        
+                        fig.update_layout(
+                            mapbox_style="stamen-terrain",
+                            margin={"r":0,"t":0,"l":0,"b":0},
+                            mapbox=dict(
+                                center=dict(lat=route_df['lat'].mean(), 
+                                          lon=route_df['lon'].mean())
+                            )
+                        )
+                        
+                        fig.update_traces(
+                            line=dict(color="red", width=3),
+                            marker=dict(size=12, color="blue")
+                        )
+                        
+                        st.plotly_chart(fig, use_container_width=True)
+                    
+                    except Exception as e:
+                        st.error(f"Failed to load map: {str(e)}")
+                        st.warning("Map visualization is currently unavailable")
+                
                 else:
                     st.error("Package not found. Please check your Tracking ID")
 

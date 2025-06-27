@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import pandas as pd
 
 db_name = "data/packages.db"
 
@@ -205,3 +206,28 @@ def get_status_history(package_id: str):
     history = cursor.fetchall()
     conn.close()
     return history
+
+def get_status_distribution():
+    """Get package status counts for dashboard"""
+    conn, cursor = connect()
+    cursor.execute("""
+        SELECT status, COUNT(*) as count 
+        FROM packages 
+        GROUP BY status
+    """)
+    result = cursor.fetchall()
+    conn.close()
+    return pd.DataFrame(result, columns=['Status', 'Count'])
+
+def get_recent_packages(limit=10):
+    """Get recent packages for dashboard"""
+    conn, cursor = connect()
+    cursor.execute("""
+        SELECT id, sender, receiver, status, eta 
+        FROM packages 
+        ORDER BY created_at DESC 
+        LIMIT ?
+    """, (limit,))
+    result = cursor.fetchall()
+    conn.close()
+    return pd.DataFrame(result, columns=['ID', 'Sender', 'Receiver', 'Status', 'ETA'])

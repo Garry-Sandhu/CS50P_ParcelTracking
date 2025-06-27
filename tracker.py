@@ -1,6 +1,10 @@
 import uuid
 from datetime import datetime, timedelta
 import streamlit as st
+import plotly.express as px
+import pandas as pd
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
 from database import add_package, update_status, get_package, delete_package, get_status_history
 
 def create_package():
@@ -136,10 +140,6 @@ def delete_package_by_id():
         else:
             st.error("❌ Package not found. Please verify the Tracking ID")
 
-import plotly.express as px
-import pandas as pd
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
 
 def track_package_by_id():
     st.header("📡 Track Package")

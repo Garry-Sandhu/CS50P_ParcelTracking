@@ -8,7 +8,8 @@ Name:- Manjeet Singh
 1. streamlit
 2. pandas 
 3. plotly
-
+    Node :- pip install pandas plotly
+    
 Instruction to install and use Streamlit
 **Do it inside the project**
 

@@ -20,8 +20,8 @@ Step 2: # macOS and Linux
             .venv\Scripts\activate.bat
 Step 3: pip install streamlit
 Step 4: pip show streamlit
-Step 5: Run your Streamlit app (YouFile Name).
-        streamlit run app.py (YouFile Name).
+Step 5: Run your Streamlit app (Your File Name).
+        streamlit run project.py (File Name).
 Step 6: To stop the Streamlit server, press Ctrl+C in the terminal.
 Step 7: When you're done using this environment, return to your normal shell by typing:
         deactivate

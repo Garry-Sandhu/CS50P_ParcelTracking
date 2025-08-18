@@ -1,6 +1,8 @@
 # CS50P_ParcelTracking
+#### Video Demo:  https://youtu.be/p_kiu6_g1nE 
+#### Description:
  CS 50P Final Project
-2 person project
+ 2 person project
 Name:- Gursharanjot Singh
 Name:- Manjeet Singh
 
